@@ -1,111 +1,185 @@
-
-export const signUp  = async (req , res)=>{
+export const signUp = async (req, res) => {
     try {
-        let {name,email,password,userName} = req.body
+        let { name, email, password, userName } = req.body
 
-        if(!name || !userName|| !password || !email){
-            return res.status(400).json({message:"All fields are required"})
+        if (!name || !userName || !password || !email) {
+            return res.status(400).json({ message: "All fields are required" })
         }
-        let findByEmail =  await User.findOne({email});
+        let findByEmail = await User.findOne({ email });
 
-        if(findByEmail){
-            return res.status(400).json({message:"User already exists with this email"})
+        if (findByEmail) {
+            return res.status(400).json({ message: "User already exists with this email" })
         }
-        let findByUserName = await User.findOne({userName});
+        let findByUserName = await User.findOne({ userName });
 
-        if(findByUserName){
-            return res.status(400).json({message:"User already exists with this userName"})
+        if (findByUserName) {
+            return res.status(400).json({ message: "User already exists with this userName" })
         }
 
-         if(password.length<6){
-            return res.status(400).json({message:"Password must be at least 6 characters"})
-         }  
-         
-        let hashedPassword = await bcrypt.hash(password,10);
+        if (password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters" })
+        }
+
+        let hashedPassword = await bcrypt.hash(password, 10);
 
         let user = new User({
             name,
             email,
-            password:hashedPassword,
+            password: hashedPassword,
             userName
         })
 
         const token = await genToken(user._id);
 
-        res.cookie("token",token,{
-            httpOnly:true,
-            secure:false,
-            sameSite:"strict",
-            maxAge:10*365*24*60*60*1000 //10 years
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 10 * 365 * 24 * 60 * 60 * 1000 //10 years
         })
 
         await user.save();
 
-        res.status(201).json({message:"User registered successfully",user,token})
+        res.status(201).json({ message: "User registered successfully", user, token })
 
 
     } catch (error) {
-        res.status(500).json({message:"Internal server error in signup page",error:error.message})
+        res.status(500).json({ message: "Internal server error in signup page", error: error.message })
     }
 }
 
 import User from "../models/user.model.js"
 import bcrypt from "bcryptjs"
 import genToken from "../config/token.js"
+import sendMail from "../config/Mail.js";
 
-export const signIn  = async (req , res)=>{
+export const signIn = async (req, res) => {
     try {
-        let {password,userName} = req.body
+        let { password, userName } = req.body
 
-        if(!userName|| !password ){
-            return res.status(400).json({message:"Both fields are required"})
-        }
-      
-        let findByUserName = await User.findOne({userName});
-        if(!findByUserName){
-            return res.status(400).json({message:"Invalid credentials"})
+        if (!userName || !password) {
+            return res.status(400).json({ message: "Both fields are required" })
         }
 
-        const isMatch = await bcrypt.compare(password,findByUserName.password);
-        if(!isMatch){
-            return res.status(400).json({message:"Invalid credentials"})
+        let findByUserName = await User.findOne({ userName });
+        if (!findByUserName) {
+            return res.status(400).json({ message: "Invalid credentials" })
+        }
+
+        const isMatch = await bcrypt.compare(password, findByUserName.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials" })
         }
         let user = findByUserName;
 
-       
+
 
         const token = await genToken(user._id);
 
-        res.cookie("token",token,{
-            httpOnly:true,
-            secure:false,
-            sameSite:"strict",
-            maxAge:10*365*24*60*60*1000 //10 years
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 10 * 365 * 24 * 60 * 60 * 1000 //10 years
         })
 
-        
 
-        res.status(200).json({message:"User login successfully",user,token})
+
+        res.status(200).json({ message: "User login successfully", user, token })
 
 
     } catch (error) {
-        res.status(500).json({message:"Internal server error in signin page",error:error.message})
+        res.status(500).json({ message: "Internal server error in signin page", error: error.message })
     }
 }
 
 
 export const signout = (req, res) => {
-   try {
-    res.clearCookie("token",{
-        httpOnly:true,
-        secure:false,
-        sameSite:"strict",
-    })
-    res.status(200).json({message:"Signout successfully"})
-   }
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+        })
+        res.status(200).json({ message: "Signout successfully" })
+    }
     catch (error) {
-        res.status(500).json({message:"Internal server error in signout page",error:error.message})
+        res.status(500).json({ message: "Internal server error in signout page", error: error.message })
     }
 
 }
 
+export const sendOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ message: "user not found this email entre valid email" })
+        }
+
+        const otp = Math.floor(1000 + Math.random() * 90000).toString()
+
+        user.resetOtp = otp
+        user.otpExpires = Date.now() + 5 * 60 * 1000
+        user.isOtpVerified = false
+
+        await user.save()
+
+        await sendMail(email, otp)
+
+        return res.status(200).json({ message: "otp send on your email successfully !" })
+
+    } catch (error) {
+        console.error("❌ Error in sendOtp:", error);
+        res.status(500).json({
+        message: "Internal server error in send otp",
+        error: error.message,
+        stack: error.stack,
+    });
+    }
+}
+
+export const verifyOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body
+        const user = await User.findOne({ email })
+
+        if (!user || user.resetOtp != otp || user.otpExpires < Date.now()) {
+            return res.status(400).json({ message: "Invalid/Expired OTP" })
+        }
+
+        user.isOtpVerified = true
+        user.resetOtp = undefined
+        user.otpExpires = undefined
+
+        await user.save()
+        return res.status(200).json({ message: "OTP verified successfully !" })
+
+
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error in otp verify ", error: error.message })
+
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body
+        const user = await User.findOne({ email })
+        if (!user || !user.isOtpVerified) {
+            return res.status(400).json({ message: "First verify OTP to reset password" })
+        }
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters" })
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+        user.password = hashedPassword
+        user.isOtpVerified = false
+        await user.save()
+
+        return res.status(200).json({ message: "Password reset successfully !" })
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error in reset password ", error: error.message })
+    }
+}

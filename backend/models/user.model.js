@@ -1,64 +1,73 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
+    name: {
+        type: String,
+        required: true,
     },
-    userName :{
-        type:String,
-        required:true,
-        unique:true,
+    userName: {
+        type: String,
+        required: true,
+        unique: true,
     },
-    email:{
-        type:String,
-        required:true,
+    email: {
+        type: String,
+        required: true,
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+        type: String,
+        required: true,
     },
-    profileImage:{
-        type:String,
+    profileImage: {
+        type: String,
     },
-    follwers:[
+    follwers: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
         }
     ],
-     follwing:[
+    follwing: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
         }
     ],
-    posts:[
+    posts: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Post"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post"
         }
     ],
-    saved:[
+    saved: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Post"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post"
         }
     ],
-    loops:[
+    loops: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Loop"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Loop"
         }
     ],
-    story:[
+    story: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Story"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Story"
         }
-    ]
-    
-    },{timestamps:true});
+    ],
+    resetOtp: {
+        type: String
+    },
+    otpExpires: {
+        type: Date
+    },
+    isOtpVerified: {
+        type: Boolean,
+        default: false
+    }
+}, { timestamps: true });
 
-const user = mongoose.model("User",userSchema);
+const user = mongoose.model("User", userSchema);
 export default user;
