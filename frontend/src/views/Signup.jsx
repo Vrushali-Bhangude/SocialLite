@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 const serverURL = import.meta.env.VITE_SERVER_URL;
 const Signup = () => {
   const [inputClicked, setInputClicked] = useState({
@@ -17,9 +19,9 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
-
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
@@ -37,7 +39,7 @@ const Signup = () => {
         { withCredentials: true }
       );
 
-      console.log(res.data);
+      dispatch(setUserData(res.data))
       setLoading(false);
       toast.success("Signup successful! Please log in.");
       setTimeout(() => {

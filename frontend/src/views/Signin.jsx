@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 const serverURL = import.meta.env.VITE_SERVER_URL;
 const Signin = () => {
   const [inputClicked, setInputClicked] = useState({
@@ -12,9 +14,9 @@ const Signin = () => {
   });
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
-
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const handleSignin = async (e) => {
     e.preventDefault();
     try {
@@ -29,12 +31,9 @@ const Signin = () => {
         { withCredentials: true }
       );
 
-      console.log(res.data);
+      dispatch(setUserData(res.data));
       setLoading(false);
       toast.success("Signin successful! ");
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
     } catch (error) {
       setLoading(false);
       console.error("Signin error:", error);
@@ -117,6 +116,19 @@ const Signin = () => {
                 value={password}
               />
             </div>
+              
+            <p
+              className="cursor-pointer text-gray-800 text-[12px] ml-[150px] flex"
+              onClick={() => {
+                navigate("/forgot-password");
+              }}
+            >
+              Forgot Password ?{" "}
+              <span className=" border-b-2 border-b-black pb-[3px] text-black">
+                Reset here
+              </span>
+            </p>
+
             <button
               className="w-[70%] px-[10px] py-[10px] bg-black text-white font-semibold h-[45px] cursor-pointer rounded-xl mt-[20px]  hover:bg-gray-800 text-[14px] ml-[40px]"
               onClick={handleSignin}
