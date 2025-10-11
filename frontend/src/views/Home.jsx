@@ -1,8 +1,18 @@
 import React from 'react'
+import LeftHome from '../components/LeftHome'
+import Feed from '../components/Feed'
+import RightHome from '../components/RightHome'
+import getCurrentUser from '../hooks/getCurrentUser'
 
 const Home = () => {
   return (
-    <div>Home</div>
+   <>
+     <div className='w-full flex justify-center items-center'>
+        <LeftHome />
+        <Feed />
+        <RightHome />
+     </div>
+   </>
   )
 }
 

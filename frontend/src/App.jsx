@@ -6,10 +6,11 @@ import Signin from './views/Signin.jsx'
 import Forgot from './views/Forgot.jsx';
 import Home from './views/Home.jsx';
 import { useSelector } from 'react-redux';
-import user from '../../backend/models/user.model.js';
 import getCurrentUser from './hooks/getCurrentUser.jsx';
+import getsuggestedUsers from './hooks/getSuggestedUser.jsx';
 const App = () => {
    getCurrentUser();
+   getsuggestedUsers();
   const {userData} = useSelector((state)=>state.user)
   return (
     <div>
