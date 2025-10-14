@@ -1,15 +1,16 @@
 import React from "react";
 import dp from "../assets/dp.png";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const OtherUser = ({ user }) => {
   const { userData } = useSelector((state) => state.user);
-  
+  const navigate = useNavigate();
   return (
     <div className="w-full h-[60px] flex items-center justify-center border-b border-gray-800">
       <div className="flex items-center p-4 w-full justify-between">
         {/* Profile Image */}
-        <div className="w-[50px] h-[50px] border-2 border-gray-700 rounded-full overflow-hidden">
+        <div className="w-[50px] h-[50px] border-2 border-gray-700 rounded-full overflow-hidden" onClick={()=>navigate(`/profile/${user?.userName}`)}>
           <img
             src={user?.profileImage || dp}
             alt="Profile"
