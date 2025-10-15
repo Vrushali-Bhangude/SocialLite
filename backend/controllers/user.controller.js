@@ -41,8 +41,14 @@ export const editProfile = async (req, res) => {
 
         let profileImage;
         if (req.file) {
-            profileImage = await uploadToCloudinary(req.file.path);
+            try {
+                profileImage = await uploadToCloudinary(req.file.path);
+            } catch (error) {
+                console.error("Cloudinary upload failed:", error);
+                return res.status(500).json({ message: "Image upload failed" });
+            }
         }
+
         user.name = name
         user.userName = userName
         user.bio = bio
@@ -61,12 +67,12 @@ export const editProfile = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-         const userName = req.params.userName;
-         const user = await User.findOne({userName}).select("-password");
-            if(!user){  
-                return res.status(404).json({message:"User not found"});
-            }
-            return res.status(200).json({user});
+        const userName = req.params.userName;
+        const user = await User.findOne({ userName }).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({ message: "Internal server error in get profile", error: error.message });
     }
