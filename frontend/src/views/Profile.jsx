@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import dp from '../assets/dp.png'
 import { setProfileData, setUserData } from '../redux/userSlice';
 import { MdOutlineKeyboardBackspace } from "react-icons/md";
+import Nav from '../components/Nav';
 
 
 const Profile = () => {
@@ -51,7 +52,7 @@ const Profile = () => {
                     <div className='font-semibold  text-[20px]'>
                         {profileData?.userName}
                     </div>
-                    <div className='font-semibold cursor-pointer text-[18px] text-blue-500' onClick={handleLogOut}>
+                    <div className='font-semibold cursor-pointer text-[14px] md:text-[18px] text-blue-500' onClick={handleLogOut}>
                         Log Out
                     </div>
                 </div>
@@ -67,13 +68,13 @@ const Profile = () => {
                     <div>
                         <div className='font-semibold text-[20px] text-white'>{profileData?.name}</div>
                         <div className='text-[17px] text-[#ffffffe8]' >{profileData?.profession || "New User"}</div>
-                        <div className='text-[17px] text-[#ffffffe8]'>{profileData?.bio}</div>
+                        <div className='text-[12px] md:text-[16px] text-[#ffffffe8] md:w-[300px]'>{profileData?.bio}</div>
                     </div>
                 </div>
 
                 <div className='w-full h-[100px] flex items-centre gap-[40px] md:gap-[60px] px-[20%] justify-center text-white'>
                     <div>
-                        <div className='text-white text-[20px] md:text-[24px] font-semibold'> {profileData?.posts.length}</div>
+                        <div className='text-white text-[20px] md:text-[24px] font-semibold'> {profileData?.posts?.length}</div>
                         <div className='text-[16px] md:text-[18px]'>Posts</div>
                     </div>
 
@@ -150,7 +151,7 @@ const Profile = () => {
 
                 <div className='w-full h-[50px] flex justify-center items-center gap-[20px]'>
                     {profileData?._id == userData?.user?._id &&
-                        <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl'>
+                        <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl' onClick={()=>navigate("/edit-profile")}>
                             Edit Profile
                         </button>
                     }
@@ -170,7 +171,7 @@ const Profile = () => {
 
                <div className='w-full min-h-[100vh] flex justify-center'>
                  <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[10px] bg-white relative gap-[20px] mt-[20px]'>
-
+                     <Nav/>
                  </div>
 
                </div>
