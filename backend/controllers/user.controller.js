@@ -3,8 +3,7 @@ import User from "../models/user.model.js";
 export const getCurrentUser = async (req, res) => {
     try {
         const userId = req.userId;
-        console.log("User ID from token:", userId); // Debugging line
-        const user = await User.findById(userId).select("-password");
+        const user = await User.findById(userId).select("-password").populate("posts");
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
