@@ -1,7 +1,6 @@
 import Post from "../models/post.model.js"
 import User from "../models/user.model.js";
 import uploadToCloudinary from "../config/cloudinary.js"
-import { use } from "react";
 
 export const uploadPost = async (req, res) => {
     try {
@@ -80,7 +79,7 @@ export const comment = async (req, res) => {
         return res.status(200).json(post)
 
     } catch (error) {
-               return res.status(500).json({ message: `creating post error  ${error}` })
+               return res.status(500).json({ message: `comment post error  ${error}` })
 
     }
 }
