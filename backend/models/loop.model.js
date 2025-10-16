@@ -1,9 +1,10 @@
+
 import mongoose from "mongoose";
 
 
 const loopSchema = new mongoose.Schema({
     author: {
-        type: moongoose.Schema.types.objectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },

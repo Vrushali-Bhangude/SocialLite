@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const storySchema = new mongoose.Schema({
     author: {
-        type: mongoose.Schema.types.objectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },
@@ -18,7 +18,7 @@ const storySchema = new mongoose.Schema({
     },
     viewers: [
         {
-            type: mongoose.Schema.types.objectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         }

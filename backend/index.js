@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import postRouter from "./routes/post.route.js";
 import loopRouter from "./routes/loop.route.js";
+import storyRouter from "./routes/story.route.js";
 
 const app = express();
 
@@ -23,9 +24,9 @@ app.use(cookieParser())
 
 app.use("/api/auth/",authRouter);
 app.use("/api/user/",userRouter);
-app.use("api/post/",postRouter);
-app.use("api/loop/",loopRouter)
-
+app.use("/api/post/",postRouter);
+app.use("/api/loop/",loopRouter);
+app.use("/api/story/",storyRouter);
 
 
 app.listen(PORT, () => {
