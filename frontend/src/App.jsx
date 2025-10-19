@@ -8,6 +8,7 @@ import Signin from './views/Signin.jsx'
 import Forgot from './views/Forgot.jsx';
 import Profile from './views/Profile.jsx';
 import EditProfile from './views/EditProfile.jsx';
+import Upload from './views/Upload.jsx';
 import Home from './views/Home.jsx';
 import toast from 'react-hot-toast';
 
@@ -28,7 +29,8 @@ const App = () => {
           <Route path='/signin' element={!userData ? <Signin /> : <Navigate to='/' />} />
           <Route path='/' element={userData ? <Home /> : <Navigate to='/signin' />} />
           <Route path='/profile/:userName' element={userData ? <Profile /> : <Navigate to='/signin' />} />
-          <Route path='edit-profile' element={userData ? <EditProfile /> : <Navigate to='/signin' />} />
+          <Route path='/edit-profile' element={userData ? <EditProfile /> : <Navigate to='/signin' />} />
+          <Route path='/upload' element={userData ? <Upload /> : <Navigate to='/signin' />} />
           <Route path='/forgot-password' element={!userData ? <Forgot /> : <Navigate to='/' />} />
         </Routes>
       </BrowserRouter>
