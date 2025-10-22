@@ -8,6 +8,7 @@ import dp from '../assets/dp.png'
 import { setProfileData, setUserData } from '../redux/userSlice';
 import { MdOutlineKeyboardBackspace } from "react-icons/md";
 import Nav from '../components/Nav';
+import FollowButton from '../components/FollowButton';
 
 
 const Profile = () => {
@@ -46,7 +47,7 @@ const Profile = () => {
         <>
             <div className='w-full min-h-screen bg-black'>
                 <div className=' w-full h-[80px] flex justify-between items-center px-[30px] text-white'>
-                    <div onClick={()=>navigate("/")}>
+                    <div onClick={() => navigate("/")}>
                         <MdOutlineKeyboardBackspace className='text-white w-[25px] cursor-pointer h-[25px]' />
                     </div>
                     <div className='font-semibold  text-[20px]'>
@@ -79,39 +80,29 @@ const Profile = () => {
                     </div>
 
                     <div>
-                        <div className='flex items-center justify-center gap-[20px]'>
-                            <div>
-                                <div className='flex relative'>
-                                    <div className="w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
+                        <div className="flex items-center justify-center">
+                            <div className=" relative w-[80px] h-[40px]">
+                                {profileData?.followers?.slice(0, 3).map((user, index) => (
+                                    <div
+                                        key={index}
+                                        className="w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute"
+                                        style={{ left: `${index * 15}px` }} // overlap by shifting 20px
+                                    >
                                         <img
-                                            src={profileData?.profileImage || dp}
+                                            src={user?.profileImage || dp}
                                             alt="Profile"
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    <div className="w-[40px] h-[40px] absolute border-2 border-black rounded-full cursor-pointer overflow-hidden left-[9px]">
-                                        <img
-                                            src={profileData?.profileImage || dp}
-                                            alt="Profile"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div className="w-[40px] h-[40px] absolute left-[18px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
-                                        <img
-                                            src={profileData?.profileImage || dp}
-                                            alt="Profile"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                </div>
+                                ))}
                             </div>
-                            <div className='text-white text-[18px] md:text-[24px] font-semibold'>
+                            <div className="text-white text-[18px] md:text-[24px]  ml-[-10px]">
                                 {profileData?.followers?.length}
                             </div>
                         </div>
-
-                        <div className='text-[16px] md:text-[18px]'>Followeres</div>
+                        <div className="text-[16px] md:text-[18px] text-center">Followers</div>
                     </div>
+
 
                     <div>
                         <div className='flex items-center justify-center gap-[20px]'>
@@ -151,30 +142,30 @@ const Profile = () => {
 
                 <div className='w-full h-[50px] flex justify-center items-center gap-[20px]'>
                     {profileData?._id == userData?.user?._id &&
-                        <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl' onClick={()=>navigate("/edit-profile")}>
+                        <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl' onClick={() => navigate("/edit-profile")}>
                             Edit Profile
                         </button>
                     }
-                    {profileData?._id != userData?.user?._id && 
-                         
-                         <>
-                         <button className='px-[10px] min-w-[100px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl'>
-                            Follow
-                        </button>
-                        <button className='px-[10px] min-w-[100px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl'>
-                            Messgae
-                        </button>
-                         </>
+                    {profileData?._id != userData?.user?._id &&
+
+                        <>
+
+                            <FollowButton tailwind={'px-[10px] min-w-[100px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl'} targetUserId={profileData?._id} onFollowChange={handleProfile} />
+
+                            <button className='px-[10px] min-w-[100px] py-[5px] h-[40px] bg-[white] cursor-pointer rounded-xl'>
+                                Messgae
+                            </button>
+                        </>
                     }
 
                 </div>
 
-               <div className='w-full min-h-[100vh] flex justify-center'>
-                 <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[10px] bg-white relative gap-[20px] mt-[20px]'>
-                     <Nav/>
-                 </div>
+                <div className='w-full min-h-[100vh] flex justify-center'>
+                    <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[10px] bg-white relative gap-[20px] mt-[20px]'>
+                        <Nav />
+                    </div>
 
-               </div>
+                </div>
 
             </div>
         </>

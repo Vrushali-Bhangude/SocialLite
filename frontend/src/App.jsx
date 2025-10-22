@@ -16,10 +16,12 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import getCurrentUser from './hooks/getCurrentUser.jsx';
 import getsuggestedUsers from './hooks/getSuggestedUser.jsx';
+import getAllPost from './hooks/getAllPost.jsx';
 
 const App = () => {
   getCurrentUser();
   getsuggestedUsers();
+  getAllPost();
   const { userData } = useSelector((state) => state.user)
   return (
     <div>

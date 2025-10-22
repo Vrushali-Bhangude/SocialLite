@@ -8,6 +8,10 @@ import { useRef } from 'react';
 import VideoPlayer from '../components/VideoPlayer';
 import axios from 'axios';
 import { ClipLoader } from "react-spinners";
+import { useDispatch, useSelector } from 'react-redux';
+import { setPostData } from '../redux/postSlice';
+import { setStoryData } from '../redux/storySlice';
+import { setLoopData } from '../redux/loopSlice';
 
 
 const Upload = () => {
@@ -16,9 +20,14 @@ const Upload = () => {
     const [frontendMedia, setFrontendMedia] = useState(null)
     const [backendMedia, setBackendMedia] = useState(null)
     const [mediaType, setMediaType] = useState(null)
-  const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [caption, setCaption] = useState("")
     const mediaInput = useRef()
+    const dispatch = useDispatch()
+    const { postData } = useSelector(state => state.post)
+    const { storyData } = useSelector(state => state.story)
+    const { loopData } = useSelector(state => state.loop)
+
 
     const handleMedia = (e) => {
         const file = e.target.files[0]
@@ -31,65 +40,68 @@ const Upload = () => {
         setFrontendMedia(URL.createObjectURL(file))
     }
 
-   const uploadPost = async () => {
-    try {
-        setLoading(true)
-        const formData = new FormData();
-        formData.append("caption", caption);
-        formData.append("mediaType", mediaType);
-        formData.append("media", backendMedia);
+    const uploadPost = async () => {
+        try {
+            setLoading(true)
+            const formData = new FormData();
+            formData.append("caption", caption);
+            formData.append("mediaType", mediaType);
+            formData.append("media", backendMedia);
+            const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/post/upload`, formData, { withCredentials: true });
+            setLoading(false)
+            toast.success("Post uploaded successfully 🎉");
+            dispatch(setPostData([...postData, result.data]))
+            navigate("/")
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to upload post ❌");
+            setLoading(false)
+        }
+    };
 
-        const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/post/upload`, formData, { withCredentials: true });
-         setLoading(false)
-        toast.success("Post uploaded successfully 🎉");
-    } catch (error) {
-        console.log(error);
-        toast.error("Failed to upload post ❌");
-         setLoading(false)
-    }
-};
+    const uploadStory = async () => {
+        try {
+            setLoading(true)
+            const formData = new FormData();
+            formData.append("mediaType", mediaType);
+            formData.append("media", backendMedia);
+            const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/story/upload`, formData, { withCredentials: true });
+            setLoading(false)
+            toast.success("Story uploaded successfully 🎊");
+            dispatch(setStoryData([...storyData,result.data]))
+             navigate("/")
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to upload story ⚠️");
+            setLoading(false)
+        }
+    };
 
-const uploadStory = async () => {
-    try {
-         setLoading(true)
-        const formData = new FormData();
-        formData.append("mediaType", mediaType);
-        formData.append("media", backendMedia);
-
-        const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/story/upload`, formData, { withCredentials: true });
-        setLoading(false)
-        toast.success("Story uploaded successfully 🎊");
-    } catch (error) {
-        console.log(error);
-        toast.error("Failed to upload story ⚠️");
-         setLoading(false)
-    }
-};
-
-const uploadLoop = async () => {
-    try {
-         setLoading(true)
-        const formData = new FormData();
-        formData.append("caption", caption);
-        formData.append("media", backendMedia);
-
-        const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/loop/upload`, formData, { withCredentials: true });
-        setLoading(false)
-        toast.success("Loop uploaded successfully 🔁");
-    } catch (error) {
-        console.log(error);
-        toast.error("Failed to upload loop 🚫");
-         setLoading(false)
-    }
-};
+    const uploadLoop = async () => {
+        try {
+            setLoading(true)
+            const formData = new FormData();
+            formData.append("caption", caption);
+            formData.append("media", backendMedia);
+            const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/loop/upload`, formData, { withCredentials: true });
+            setLoading(false)
+            toast.success("Loop uploaded successfully 🔁");
+            dispatch(setLoopData([...[loopData,result.data]]))
+             navigate("/")
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to upload loop 🚫");
+            setLoading(false)
+        }
+    };
 
 
-    const handleUpload = ()=>{
-        if(uploadType == "post")
+    const handleUpload = () => {
+        if (uploadType == "post")
             uploadPost()
-        else if(uploadType == "story")
+        else if (uploadType == "story")
             uploadStory()
-        else 
+        else
             uploadLoop()
     }
 
@@ -131,7 +143,7 @@ const uploadLoop = async () => {
                     </div>}
 
                 {frontendMedia && <button className='px-[10px] w-[60%] max-w-[400px] py-[5px] h-[40px] bg-white mt-[50px] cursor-pointer rounded-xl mb-[20px]' onClick={handleUpload} disabled={loading}>
-                   {loading? (<ClipLoader size={30} color="black"  /> ) :( <> Upload {uploadType}</>)}
+                    {loading ? (<ClipLoader size={30} color="black" />) : (<> Upload {uploadType}</>)}
                 </button>}
             </div>
         </>

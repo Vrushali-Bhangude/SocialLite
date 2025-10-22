@@ -2,6 +2,7 @@ import React from "react";
 import dp from "../assets/dp.png";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import FollowButton from "./FollowButton";
 
 const OtherUser = ({ user }) => {
   const { userData } = useSelector((state) => state.user);
@@ -24,11 +25,11 @@ const OtherUser = ({ user }) => {
             {user?.name || "Unknown User"}
           </div>
           <div className="text-[12px] text-gray-400">
-            @{user?.userName || "username"}
+            {user?.userName || "username"}
           </div>
         </div>
       </div>
-      <button className="px-[5px] w-[100px] py-[3px] h-[40px] bg-white rounded-xl">Follow</button>
+       <FollowButton tailwind={"px-[5px] w-[100px] py-[3px] h-[40px] bg-white cursor-pointer rounded-xl"} targetUserId={user._id} />
     </div>
   );
 };

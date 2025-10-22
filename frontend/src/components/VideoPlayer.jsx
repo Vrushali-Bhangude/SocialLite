@@ -1,36 +1,97 @@
-import React from 'react'
-import { useState } from 'react'
-import { useRef } from 'react'
-import { IoMdVolumeHigh } from "react-icons/io";
-import { IoMdVolumeOff } from "react-icons/io";
+import React, { useState, useRef, useEffect } from 'react'
+import { IoMdVolumeHigh, IoMdVolumeOff } from 'react-icons/io'
 
+const VideoPlayer = ({ media, postId, currentPlaying, setCurrentPlaying, hasAudio = false }) => {
+    const videoRef = useRef()
+    const containerRef = useRef()
+    const [mute, setMute] = useState(true)
+    const [isPlay, setIsPlay] = useState(false)
 
-const VideoPlayer = ({media}) => {
-    const videoTag = useRef()
-    const [mute, setMute] = useState(false)
-    const [ isPlay, setIsPlay] = useState(true)
-   
-
-    const handleClick = ()=>{
-        if(isPlay){
-            videoTag.current.pause()
+    const handleClick = () => {
+        if (isPlay) {
+            videoRef.current.pause()
             setIsPlay(false)
-        }else{
-            videoTag.current.play()
+        } else {
+            videoRef.current.play()
             setIsPlay(true)
+            setCurrentPlaying(postId)
         }
     }
-  return (
-   <>
-      <div className='h-[100%] relative  cursor-pointer max-w-full rounded-xl overflow-hidden'> 
-          <video ref={videoTag} src={media} autoPlay loop muted={mute} className='h-[100%] cursor-pointer w-full object-cover rounded-xl' onClick={handleClick}  />
-          <div>
-            { !mute? <IoMdVolumeHigh className='w-[20px] h-[20px] text-white font-semibold' onClick={()=> setMute(prev=>!prev)} /> 
-            :<IoMdVolumeOff  className='w-[20px] h-[20px] text-white font-semibold' />}
-          </div>
-      </div>
-   </>
-  )
+
+    const handleMuteToggle = () => {
+        setMute(prev => !prev)
+        if (!mute) setCurrentPlaying(postId)
+    }
+
+    // IntersectionObserver for scroll-based auto play & auto-unmute
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    // Play muted first (browser allows this)
+                    videoRef.current.muted = true
+                    videoRef.current.play()
+                    setIsPlay(true)
+                    setCurrentPlaying(postId)
+
+                    // Auto unmute after slight delay if video has audio
+                    if (hasAudio) {
+                        setTimeout(() => {
+                            try {
+                                videoRef.current.muted = false
+                                setMute(false)
+                            } catch (err) {
+                                console.log('Autoplay with sound blocked', err)
+                            }
+                        }, 200) // 200ms delay
+                    }
+                } else {
+                    videoRef.current.pause()
+                    videoRef.current.currentTime = 0
+                    setIsPlay(false)
+                    videoRef.current.muted = true
+                    setMute(true)
+                }
+            },
+            { threshold: 0.6 }
+        )
+
+        if (containerRef.current) observer.observe(containerRef.current)
+
+        return () => {
+            if (containerRef.current) observer.unobserve(containerRef.current)
+        }
+    }, [postId, hasAudio, setCurrentPlaying])
+
+    // Sync mute with currentPlaying
+    useEffect(() => {
+        if (currentPlaying === postId) {
+            videoRef.current.muted = mute
+        } else {
+            videoRef.current.muted = true
+        }
+    }, [currentPlaying, mute, postId])
+
+    return (
+        <div ref={containerRef} className='relative w-full rounded-xl overflow-hidden'>
+            <video
+                ref={videoRef}
+                src={media}
+                loop
+                muted={mute}
+                className='w-full h-auto object-cover cursor-pointer'
+                onClick={handleClick}
+            />
+
+            <div className='absolute bottom-4 right-4 bg-black bg-opacity-50 p-2 rounded-full'>
+                {mute ? (
+                    <IoMdVolumeOff className='w-6 h-6 text-white cursor-pointer' onClick={handleMuteToggle} />
+                ) : (
+                    <IoMdVolumeHigh className='w-6 h-6 text-white cursor-pointer' onClick={handleMuteToggle} />
+                )}
+            </div>
+        </div>
+    )
 }
 
 export default VideoPlayer
