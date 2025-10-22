@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React from 'react'
+import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,12 +9,16 @@ import { setProfileData, setUserData } from '../redux/userSlice';
 import { MdOutlineKeyboardBackspace } from "react-icons/md";
 import Nav from '../components/Nav';
 import FollowButton from '../components/FollowButton';
+import Post from '../components/Post';
 
 
 const Profile = () => {
     const { userName } = useParams();
     const dispatch = useDispatch();
     const { profileData, userData } = useSelector((state) => state.user)
+    const { postData } = useSelector((state) => state.post)
+    const [postType, setPostType] = useState("post")
+    const [currentPlaying, setCurrentPlaying] = useState(null)
     const navigate = useNavigate();
 
     const handleProfile = async () => {
@@ -73,7 +77,7 @@ const Profile = () => {
                     </div>
                 </div>
 
-                <div className='w-full h-[100px] flex items-centre gap-[40px] md:gap-[60px] px-[20%] justify-center text-white'>
+                <div className='w-full h-[100px] flex items-centre gap-[40px] md:gap-[60px] px-[20%] justify-center text-white mt-[20px]'>
                     <div>
                         <div className='text-white text-[20px] md:text-[24px] font-semibold'> {profileData?.posts?.length}</div>
                         <div className='text-[16px] md:text-[18px]'>Posts</div>
@@ -84,7 +88,7 @@ const Profile = () => {
                             <div className=" relative w-[80px] h-[40px]">
                                 {profileData?.followers?.slice(0, 3).map((user, index) => (
                                     <div
-                                        key={index}
+                                        key={user._id || index}
                                         className="w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute"
                                         style={{ left: `${index * 15}px` }} // overlap by shifting 20px
                                     >
@@ -96,7 +100,7 @@ const Profile = () => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="text-white text-[18px] md:text-[24px]  ml-[-10px]">
+                            <div className="text-white text-[18px] md:text-[24px]  ml-[-10px] text-center">
                                 {profileData?.followers?.length}
                             </div>
                         </div>
@@ -105,33 +109,25 @@ const Profile = () => {
 
 
                     <div>
-                        <div className='flex items-center justify-center gap-[20px]'>
-                            <div>
-                                <div className='flex relative'>
-                                    <div className="w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
-                                        <img
-                                            src={profileData?.profileImage || dp}
-                                            alt="Profile"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div className="w-[40px] h-[40px] absolute border-2 border-black rounded-full cursor-pointer overflow-hidden left-[9px]">
-                                        <img
-                                            src={profileData?.profileImage || dp}
-                                            alt="Profile"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div className="w-[40px] h-[40px] absolute left-[18px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
-                                        <img
-                                            src={profileData?.profileImage || dp}
-                                            alt="Profile"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
+                        <div className='flex items-center justify-center'>
+                            <div className=' flex items-center justify-center'>
+                                <div className=" flex relative w-[80px] h-[40px]">
+                                    {profileData?.following?.slice(0, 3).map((user, index) => (
+                                        <div
+                                            key={user._id || index}
+                                            className="w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute"
+                                            style={{ left: `${index * 15}px` }}
+                                        >
+                                            <img
+                                                src={user?.profileImage || dp}
+                                                alt="Profile"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                            <div className='text-white text-[18px] md:text-[24px] font-semibold'>
+                            <div className='text-white text-[18px] md:text-[24px] font-semibold text-center' >
                                 {profileData?.following?.length}
                             </div>
                         </div>
@@ -161,8 +157,44 @@ const Profile = () => {
                 </div>
 
                 <div className='w-full min-h-[100vh] flex justify-center'>
-                    <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[10px] bg-white relative gap-[20px] mt-[20px]'>
+                    <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[10px] bg-white relative gap-[20px] mt-[20px] pb-[100px]'>
+
+                        {profileData?._id == userData.user._id  && 
+                         <div className='w-[80%] max-w-[500px] h-[50px] bg-white rounded-xl flex justify-center items-center gap-[10px]' >
+                            <div className={`${postType == "post" ? "bg-black text-white shadow-2xl shadow-black" : ""} w-[25%] h-[80%] flex justify-center items-center text-[18px] cursor-pointer hover:bg-black hover:text-white hover:shadow-2xl hover:shadow-black rounded-full`} onClick={() => setPostType("post")}>Posts</div>
+                            <div className={`${postType == "saved" ? "bg-black text-white shadow-2xl shadow-black" : ""} w-[25%] h-[80%] flex justify-center items-center text-[18px] cursor-pointer hover:bg-black hover:text-white hover:shadow-2xl hover:shadow-black rounded-full`} onClick={() => setPostType("saved")}>Saved</div>
+                        </div>
+                        }
+                       
+
                         <Nav />
+                        
+                        {profileData?._id == userData.user._id &&  
+                         <>
+                         {postType == "post" && postData.map((post, index) => (
+                            post.author?._id == profileData?._id && <Post key={post._id || index} post={post} />
+                        ))}
+
+                        {postType === "saved" && Array.isArray(userData.user.saved) &&
+                            userData.user.saved.map((post, index) => (
+                                <Post
+                                    key={post._id}
+                                    post={post}
+                                    postId={post._id}
+                                    currentPlaying={currentPlaying}
+                                    setCurrentPlaying={setCurrentPlaying}
+                                />
+                            ))
+                        }
+                         </>
+                        }
+
+                        {profileData?._id != userData.user._id &&  
+                         postData.map((post, index) => (
+                            post.author?._id == profileData?._id && <Post key={post._id || index} post={post} />
+                        ))
+                        }
+
                     </div>
 
                 </div>

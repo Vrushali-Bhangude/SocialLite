@@ -85,7 +85,7 @@ const Post = ({ post, postId, currentPlaying, setCurrentPlaying }) => {
     };
 
     return (
-        <div className="w-[90%] md:w-[70%] lg:w-[60%] bg-white min-h-[450px] flex flex-col gap-4 items-center shadow-lg shadow-gray-400 rounded-2xl p-4 transition-transform hover:scale-[1.01] duration-300">
+        <div className="w-[90%] md:w-[70%] lg:w-[60%] bg-white min-h-[450px] flex flex-col gap-4 items-center shadow-lg shadow-gray-400 rounded-2xl p-4 transition-transform hover:scale-[1.01] duration-300 mt-[10px]">
 
             <div className="w-full flex justify-between items-center">
                 <div className="flex items-center gap-3 md:gap-4">
