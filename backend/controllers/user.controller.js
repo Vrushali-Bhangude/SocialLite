@@ -67,12 +67,60 @@ export const editProfile = async (req, res) => {
 export const getProfile = async (req, res) => {
     try {
         const userName = req.params.userName;
-        const user = await User.findOne({ userName }).select("-password");
+        const user = await User.findOne({ userName }).select("-password")
+        .populate("posts loops followers following");
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
         return res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({ message: "Internal server error in get profile", error: error.message });
+    }
+}
+
+
+export const follow = async (req, res) => {
+    try {
+        const currentUserId = req.userId
+        const targetUserId = req.params.targetUserId
+
+        if (!targetUserId) {
+            return res.status(400).json({ messgae: "target user not found" })
+        }
+
+        if (currentUserId == targetUserId) {
+            return res.status(400).json({ messgae: "you can not follow yourself" })
+        }
+
+        const currentUser = await User.findById(currentUserId)
+        const targetUser = await User.findById(targetUserId)
+
+        const isFollowing = currentUser.following.includes(targetUserId)
+
+        if (isFollowing) {
+            currentUser.following = currentUser.following.filter(id => id.toString() != targetUserId)
+            targetUser.followers = targetUser.followers.filter(id => id.toString() != currentUserId)
+
+            await currentUser.save()
+            await targetUser.save()
+
+            return res.status(200).json({
+                following: false,
+                message: "unfollow successfully"
+            })
+        } else {
+            currentUser.following.push(targetUserId)
+            targetUser.followers.push(currentUserId)
+            await currentUser.save()
+            await targetUser.save()
+
+            return res.status(200).json({
+                following: true,
+                message: "follow successfully"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error to follow", error: error.message });
+
     }
 }
