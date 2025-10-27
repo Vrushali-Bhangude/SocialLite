@@ -1,9 +1,27 @@
 import uploadToCloudinary from "../config/cloudinary.js";
 import User from "../models/user.model.js";
+
+
 export const getCurrentUser = async (req, res) => {
     try {
         const userId = req.userId;
-        const user = await User.findById(userId).select("-password").populate("posts loops");
+const user = await User.findById(userId)
+  .select("-password")
+  .populate({
+    path: "posts",
+    populate: [
+      { path: "author", select: "name userName profileImage" },
+      { path: "comments.author", select: "name userName profileImage" }
+    ]
+  })
+  .populate({
+    path: "loops",
+    populate: { path: "author", select: "name userName profileImage" }
+  })
+  .populate({
+    path: "saved",
+    populate: { path: "author", select: "name userName profileImage" }
+  });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

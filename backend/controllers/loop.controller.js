@@ -5,7 +5,7 @@ import uploadToCloudinary from "../config/cloudinary.js"
 
 export const uploadLoop = async (req, res) => {
     try {
-        const { caption} = req.body
+        const { caption } = req.body
         let media;
         if (req.file) {
             media = await uploadToCloudinary(req.file.path)
@@ -13,8 +13,8 @@ export const uploadLoop = async (req, res) => {
             return res.status(400).json({ message: "media is required" })
         }
 
-        const loop= await Loop.create({
-            caption, media,  author: req.userId
+        const loop = await Loop.create({
+            caption, media, author: req.userId
         })
         const user = await User.findById(req.userId)
         user.loops.push(loop._id)
@@ -64,20 +64,22 @@ export const comment = async (req, res) => {
             message
         })
         await loop.save()
-        loop.populate("author", "name userName profileImage")
-        loop.populate("comments.author")
+        await loop.populate([
+            { path: "author", select: "name userName profileImage" },
+            { path: "comments.author", select: "name userName profileImage" }
+        ])
         return res.status(200).json(loop)
 
     } catch (error) {
-               return res.status(500).json({ message: `comment loop error  ${error}` })
+        return res.status(500).json({ message: `comment loop error  ${error}` })
 
     }
 }
 
 export const getAllLoops = async (req, res) => {
     try {
-        const loops = await Loop.find({}).
-            populate("author", "name userName profileImage")
+        const loops = await Loop.find({})
+            .populate("author", "name userName profileImage")
             .populate("comments.author")
         return res.status(200).json(loops)
     } catch (error) {
