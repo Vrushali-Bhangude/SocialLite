@@ -175,7 +175,7 @@ const Post = ({ post, postId, currentPlaying, setCurrentPlaying }) => {
                     <div className="w-full flex items-center gap-2 px-4">
                         <div className="w-10 h-10 md:w-12 md:h-12 border-2 border-black rounded-full overflow-hidden cursor-pointer">
                             <img
-                                src={post?.author?.profileImage || dp}
+                               src={userData?.user?.profileImage || dp}
                                 alt="Profile"
                                 className="w-full h-full object-cover"
                             />
@@ -187,12 +187,13 @@ const Post = ({ post, postId, currentPlaying, setCurrentPlaying }) => {
                             onChange={(e) => setMessage(e.target.value)}
                             value={message}
                         />
+                       {message && 
                         <button
                             className="p-1 hover:text-blue-500 transition-colors"
                             onClick={handleComment}
                         >
                             <MdSend className="w-5 h-5 md:w-6 md:h-6" />
-                        </button>
+                        </button>}
                     </div>
 
                     {/* Comments List */}

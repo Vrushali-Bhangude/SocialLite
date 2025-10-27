@@ -10,6 +10,7 @@ import Profile from './views/Profile.jsx';
 import EditProfile from './views/EditProfile.jsx';
 import Upload from './views/Upload.jsx';
 import Home from './views/Home.jsx';
+import Loops from './views/Loops.jsx';
 import toast from 'react-hot-toast';
 
 
@@ -17,11 +18,13 @@ import { useSelector } from 'react-redux';
 import getCurrentUser from './hooks/getCurrentUser.jsx';
 import getsuggestedUsers from './hooks/getSuggestedUser.jsx';
 import getAllPost from './hooks/getAllPost.jsx';
+import getAllLoop from './hooks/getAllLoop.jsx';
 
 const App = () => {
   getCurrentUser();
   getsuggestedUsers();
   getAllPost();
+  getAllLoop();
   const { userData } = useSelector((state) => state.user)
   return (
     <div>
@@ -33,6 +36,8 @@ const App = () => {
           <Route path='/profile/:userName' element={userData ? <Profile /> : <Navigate to='/signin' />} />
           <Route path='/edit-profile' element={userData ? <EditProfile /> : <Navigate to='/signin' />} />
           <Route path='/upload' element={userData ? <Upload /> : <Navigate to='/signin' />} />
+          <Route path='/loops' element={userData ? <Loops /> : <Navigate to='/signin' />} />
+
           <Route path='/forgot-password' element={!userData ? <Forgot /> : <Navigate to='/' />} />
         </Routes>
       </BrowserRouter>

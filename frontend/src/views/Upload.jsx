@@ -120,7 +120,7 @@ const Upload = () => {
                 </div>
 
                 {!frontendMedia && <div className='w-[65%] md:w-[35%] max-w[500px] h-[200px] bg-[#0e1316] border-gray-800 border-2 flex flex-col items-center justify-center gap-[8px] mt-[15vh] rounded-2xl cursor-pointer hover:bg-[#353a3d]' onClick={() => mediaInput.current.click()}>
-                    <input type="file" hidden ref={mediaInput} onChange={handleMedia} />
+                    <input type="file" accept={uploadType=="loop"? "video/*" : ""} hidden ref={mediaInput} onChange={handleMedia} />
 
                     <FaRegSquarePlus className='text-white w-[23px] cursor-pointer h-[23px]' />
                     <div className='text-white font-semibold'>   upload {uploadType}</div>
